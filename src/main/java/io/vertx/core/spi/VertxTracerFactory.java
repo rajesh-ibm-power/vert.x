@@ -11,16 +11,31 @@
 
 package io.vertx.core.spi;
 
+import io.vertx.core.VertxOptions;
+import io.vertx.core.impl.VertxBuilder;
+import io.vertx.core.impl.launcher.commands.BareCommand;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.core.spi.tracing.VertxTracer;
 import io.vertx.core.tracing.TracingOptions;
+
+import static io.vertx.core.impl.launcher.commands.BareCommand.METRICS_OPTIONS_PROP_PREFIX;
 
 /**
  * A factory for the plug-able tracing SPI.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public interface VertxTracerFactory {
+public interface VertxTracerFactory extends VertxServiceProvider {
+
+  @Override
+  default void init(VertxBuilder builder) {
+    if (builder.tracer() == null) {
+      TracingOptions tracingOptions = newOptions();
+      builder.options().setTracingOptions(tracingOptions);
+      builder.tracer(tracer(tracingOptions));
+    }
+  }
 
   /**
    * Create a new {@link VertxTracer} object.<p/>
