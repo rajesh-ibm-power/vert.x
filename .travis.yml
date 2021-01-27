@@ -1,0 +1,19 @@
+language: java
+arch:
+  - amd64
+  - ppc64le
+jdk:
+  - openjdk11
+
+dist: trusty
+install: true
+
+script: 
+  - "mvn --show-version --errors --batch-mode clean verify"
+
+cache:
+    directories:
+    - $HOME/.m2
+branches:
+    except:
+        - gh-pages
